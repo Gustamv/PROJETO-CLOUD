@@ -10,6 +10,9 @@ class User(models.Model):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
+    def __str__(self):
+        return self.name
+
 class Topic(models.Model):
     name = models.CharField(max_length=200)
 
