@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout
 from .models import Room, Topic, Message, User
+from .forms import *
 
 
 def loginPage(request):
@@ -13,15 +14,15 @@ def loginPage(request):
         return redirect('home')
 
     if request.method == 'POST':
+        name = request.POST.get('name')
         email = request.POST.get('email').lower()
-        password = request.POST.get('password')
 
         try:
             user = User.objects.get(email=email)
         except:
             messages.error(request, 'User does not exist')
 
-        user = authenticate(request, email=email, password=password)
+        user = authenticate(request, email=email, name=name)
 
         if user is not None:
             login(request, user)
@@ -39,13 +40,13 @@ def logoutUser(request):
 
 
 def registerPage(request):
-    form = MyUserCreationForm()
+    form = UserForm()
 
     if request.method == 'POST':
-        form = MyUserCreationForm(request.POST)
+        form = UserForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.username = user.username.lower()
+            user.name = user.name.lower()
             user.save()
             login(request, user)
             return redirect('home')
